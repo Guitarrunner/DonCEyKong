@@ -10,9 +10,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "LinkedList.h"
-#include "Settings.h"
 #include "Sprite.c"
-
+#include "Const.h"
 
 const float VEL = 1;
 
@@ -40,7 +39,7 @@ struct Sprite{
 
     int imageInd, hammerInd;
 
-    ALLEGRO_BITMAP *image[2];
+    ALLEGRO_BITMAP *image[3];
     ALLEGRO_BITMAP *spriteSheet;
 
 };
@@ -420,23 +419,16 @@ void updatePlayer(struct Sprite *player){
  * Output: Sprite struct
  *
  * */
-struct Sprite createPlatform(float x, float y){
+struct Sprite createPlatform(float x1, float y1, float x2, float y2){
 
     struct Sprite plat;
     plat.x = x;
     plat.y = y;
 
-    //plat.imageInd = 0;
-
-    //plat.image[0] = al_load_bitmap("Sprites/FloatingPlat.png");
-
-
-    plat.h = 602-584;//al_get_bitmap_height(plat.image[plat.imageInd]);
-    plat.w = 300-36;//al_get_bitmap_width(plat.image[plat.imageInd]);
-
+    plat.h = x2-x1;
+    plat.w = y2-y1;
 
     return plat;
-
 }
 
 //Creacion de lianas
@@ -684,22 +676,16 @@ bool allHammerCollide(struct Sprite* player, struct Node *node){
  */
 
 
-void genFirstLine(struct Node** node, unsigned spriteSize){
+void genAllPlats(struct Node** node, unsigned spriteSize){
 
     float x = PLAT_COORDSX1*1.15;
     float y = PLAT_COORDSY1*1.15;
 
     for (int i = 0; i < 7; ++i) {
 
-        struct Sprite plat = createPlatform(x,y);
-        plat.w = PLAT_W*1.15;
-        plat.h = PLAT_H*1.15;
+        struct Sprite plat = createPlatform(platX1[i], platY1[i], platX2[i], platY2[i]);
 
         push(node,&plat,spriteSize);
-
-        x+=37*1.15;
-        y-=2*1.15;
-
     }
 
 
