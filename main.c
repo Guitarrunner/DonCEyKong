@@ -17,12 +17,13 @@
 const int WIDTH = 600;
 const int HEIGHT = 600;
 const double FPS  = 1.0/60;
+const int multSize = 3.5;
 bool running = true;
 enum KEYS {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE};
 
 
 //Main game function
-void gameOver();
+void newGame();
 
 
 
@@ -41,10 +42,16 @@ void newGame(){
 
 
     ALLEGRO_BITMAP *background;
+    background = al_load_bitmap("Sprites/NES - Donkey Kong Jr - Fields.png");
+
+    assert(background != NULL);
    
-    ALLEGRO_DISPLAY *display = al_create_display(WIDTH,HEIGHT);
 
 
+    unsigned width = 255;
+    unsigned height = 239;
+
+    ALLEGRO_DISPLAY *display = al_create_display(width*multSize,height*multSize);
 
 
     ALLEGRO_EVENT_QUEUE * queue;
@@ -62,8 +69,14 @@ void newGame(){
 
 
 
-    al_set_window_title(display, "DonCE-Kong!");
+    al_set_window_title(display, "DonCEy-Kong Jr.!");
 
+    //Game mechanics variables
+    bool key[5] = {false, false, false, false, false};
+
+    bool showingHitboxes = false;
+    bool colliding = false;
+    bool falling = true;
 
     bool running = true;
     al_start_timer(timer);
@@ -72,20 +85,98 @@ void newGame(){
         ALLEGRO_EVENT event;
         al_wait_for_event(queue, &event);
 
+//----------------------- Event Detection ---------------------------------------------------------------------------------
+        
+        //Keyboard detection
         if(event.type == ALLEGRO_EVENT_KEY_DOWN) {
 
             switch(event.keyboard.keycode) {
 
+                case ALLEGRO_KEY_UP:
+                    key[KEY_UP] = true;
+                    break;
+                case ALLEGRO_KEY_DOWN:
+                    key[KEY_DOWN] = true;
+                    break;
+                case ALLEGRO_KEY_LEFT:
+                    key[KEY_LEFT] = true;
+                    break;
+                case ALLEGRO_KEY_RIGHT:
+                    key[KEY_RIGHT] = true;
+                    break;
+                case ALLEGRO_KEY_SPACE:
+                    key[KEY_SPACE] = true;
+                    break;
                 case ALLEGRO_KEY_ESCAPE:
                     running = false;
                     break;
             }
         }
+        else if(event.type == ALLEGRO_EVENT_KEY_UP) {
+
+            switch(event.keyboard.keycode) {
+
+                case ALLEGRO_KEY_UP:
+                    key[KEY_UP] = false;
+                    break;
+                case ALLEGRO_KEY_DOWN:
+                    key[KEY_DOWN] = false;
+                    break;
+                case ALLEGRO_KEY_LEFT:
+                    key[KEY_LEFT] = false;
+                    break;
+                case ALLEGRO_KEY_RIGHT:
+                    key[KEY_RIGHT] = false;
+                    break;
+                case ALLEGRO_KEY_ESCAPE:
+                    running = false;
+
+                    break;
+                case ALLEGRO_KEY_SPACE:
+                    key[KEY_SPACE] = false;
+                    break;
+                //P,K and L are used for debugging
+                case ALLEGRO_KEY_P:
+                    break;
+                case ALLEGRO_KEY_K:
+                    break;
+                case ALLEGRO_KEY_L:
+                    break;
+            }
+        }
+
+        if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+            running = false;
+        }
+//----------------------- Updates ------------------------------------------------------------------------------
+        if(key[KEY_SPACE]){
+            
+        }
 
 
         if (event.type == ALLEGRO_EVENT_TIMER) {
-
             
+            //Drawing sprites, background and enemies
+            al_clear_to_color(al_map_rgb_f(255,0,0));
+            al_draw_scaled_bitmap(background,0,0,width,height,0,0,width*multSize,height*multSize,0);
+
+/*              IMPORTANTE PARA LAS ANIMACIONES
+
+            //imageInd is used in the animation of the player and other sprites
+            if(player.velX != 0 && (player.movingR || player.movingL)) {
+                (&player)->imageInd += 1;
+                (&player)->imageInd = (&player)->imageInd % 2;
+                (&player)->hammerInd += 1;
+                (&player)->hammerInd = (&player)->hammerInd%3;
+            }
+            //If the player isnt moving
+            if(!(player.movingR || player.movingL)){
+
+                player.imageInd = 0;
+
+}
+*/
+
             al_flip_display();
 
         }
@@ -291,7 +382,7 @@ int start(int level){
 
 
 /*
-        //----------------------- Rendering ----------------------------------------------------------------------------
+   //----------------------- Rendering ----------------------------------------------------------------------------
         //lo que toque
         if(event.type == ALLEGRO_EVENT_TIMER){
 
