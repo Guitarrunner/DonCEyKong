@@ -83,6 +83,28 @@ void newGame(){
     bool colliding = false;
     bool falling = true;
 
+
+    struct Sprite player = allocateSprite();
+
+    player.x= width*multSize/2;
+    player.y = height*multSize/2;
+    player.w = 10;
+    player.h = 20;
+    player.velX = 0;
+    player.velY = GRAV;
+    player.accX = 0;
+    
+    player.bx = player.w/2;
+    player.by = player.h/2;
+
+    player.movingR = false;
+    player.movingL = false;
+    player.lastR = true;
+    player.hammer = false;
+    player.climbing = false;
+
+    bool topColliding = false;
+
     bool running = true;
     al_start_timer(timer);
 
@@ -92,6 +114,34 @@ void newGame(){
 
 //----------------------- Event Detection ---------------------------------------------------------------------------------
         
+
+       //Platform collition
+        if(isCollidingWithAny(&player,platList)){
+
+            colliding = true;
+            falling = false;
+
+        } 
+        else {
+            colliding = false; falling = true;
+        };
+
+        if(allLadderCollide(&player,lianasList)){
+
+            player.climbing = true;
+            falling = true;
+
+        }
+        else player.climbing = false;
+        
+        if(isTopCollidingWithAny(&player, platList)){
+
+            topColliding = true;
+
+        }
+        else topColliding = false;
+
+
         //Keyboard detection
         if(event.type == ALLEGRO_EVENT_KEY_DOWN) {
 
@@ -153,25 +203,92 @@ void newGame(){
         if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             running = false;
         }
+        
 //----------------------- Updates ------------------------------------------------------------------------------
         if(key[KEY_SPACE]){
-         player.y+=10;   
+            if(player.climbing){
+                if(player.lastR){
+                    while(allLadderCollide(&player,lianasList)){
+                        
+                        player.x++;
+
+                    }
+                }
+                else if(!player.lastR){
+                    while(allLadderCollide(&player,lianasList)){
+                        
+                        player.x--;
+
+                    }
+                }
+            }
+            if(!falling){
+                player.y -= JUMP;
+            }
+
+
         }
-	if(key[KEY_UP]){
-            if (player.collide(liana)){
-		y++;}
-        }
-	if(key[KEY_DOWN]){
-            if (player.collide(liana)){
-		y--;}
-        }
-	if(key[KEY_RIGHT]){
-            player.x++;
-        }
-	if(key[KEY_LEFT]){
-            player.y--;
+        if(key[KEY_UP] && player.climbing && !topColliding){
+
+            player.y -= 1;
         }
 
+        if(key[KEY_DOWN] && player.climbing){
+
+            player.y +=1;
+
+        }
+        if(key[KEY_RIGHT]){
+
+            if(player.climbing){
+                while(allLadderCollide(&player,lianasList)){
+                        
+                        player.x++;
+
+                    }
+                player.x-=2;
+            }
+            else{
+                player.movingR = true;
+                player.accX = ACC;
+                player.movingL = false;
+                player.lastR = true;            
+            }
+        }
+        if(key[KEY_LEFT]){
+            if(player.climbing){
+                while(allLadderCollide(&player,lianasList)){
+                        
+                        player.x--;
+
+                    }
+                player.x+=3;
+            }
+            else{
+            player.accX = -ACC;
+            player.movingL = true;
+            player.movingR = false;
+            player.lastR = false;
+            }
+        }
+
+
+        if(colliding){
+
+            player.velY = 0;
+
+        }
+        else player.velY = GRAV;
+
+        if(topColliding && !player.climbing){
+
+            player.velY = 0;
+            player.jumping = false;
+
+        }
+
+        //Actualizar jugador antesde dibujarlo en pantalla
+        updatePlayer(&player);
 
         if (event.type == ALLEGRO_EVENT_TIMER) {
             
@@ -180,6 +297,9 @@ void newGame(){
             al_draw_scaled_bitmap(background,0,0,width,height,0,0,width*multSize,height*multSize,0);
             drawPlatRects(platList);
             drawPlatRects(lianasList);
+
+            al_draw_rectangle(player.x, player.y, player.x + player.w, player.y + player.h,
+                al_map_rgb_f(255,0,0), 2.0);
 
 /*              IMPORTANTE PARA LAS ANIMACIONES
 

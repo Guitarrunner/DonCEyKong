@@ -3,6 +3,10 @@
 
 const double FPS = 1.0/60;
 const int multSize = 3.5;
+float GRAV = 1.5;
+const float ACC = 0.25;
+float JUMP = 35;
+const float FRICC = -0.2;
 bool running = true;
 enum KEYS {KEY_UP,KEY_DOWN,KEY_LEFT,KEY_RIGHT,KEY_SPACE};
 
