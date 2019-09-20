@@ -5,6 +5,8 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/bitmap.h>
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <sys/socket.h>
@@ -17,15 +19,274 @@
 #define MAX 80
 
 
+int LIZARDCODE = -1;
+bool LIZARDBOOL = false;
+
+int clientSocket, ret;
+struct sockaddr_in serverAddr;
+char buffer[1024] = "Test";
+char bufferR[1024];
+int msg = 0;
+int barrelCode = 0;
+ALLEGRO_THREAD      *thread_1    = NULL;
+ALLEGRO_THREAD      *thread_2    = NULL;
+
+
+static void *Func_Thread1(ALLEGRO_THREAD *thr, void *arg);
+static void *Func_Thread2(ALLEGRO_THREAD *thr, void *arg);
+#define SA struct sockaddr
+#define PORT 4444
+
+
+int vidas = 3;
+int points = 0;
+
 
 //Main game function
 void newGame();
 
 
 
-int main(){
+void func(int sockfd) 
+{ 
+    char buff[MAX]; 
+    int n; 
+    for (;;) { 
+        bzero(buff, sizeof(buff)); 
+        n = 0; 
+        write(sockfd, buff, sizeof(buff)); 
+        bzero(buff, sizeof(buff)); 
+        read(sockfd, buff, sizeof(buff)); 
+        printf("From Server : %s", buff); 
 
-    newGame();
+        char delim[] = "&";
+
+        char *ptr1 = strtok(buff, delim);
+
+        char *ptr2 = strtok(NULL,ptr1);
+
+
+        if((strncmp(ptr1, "A", 1)) == 0){
+            if(strncmp(ptr2, "01", 2) == 0){
+                
+                LIZARDCODE = 0;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "02", 2) == 0){
+                
+                LIZARDCODE = 1;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "03", 2) == 0){
+                
+                LIZARDCODE = 2;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "04", 2) == 0){
+                
+                LIZARDCODE = 3;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "05", 2) == 0){
+                
+                LIZARDCODE = 4;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "06", 2) == 0){
+                
+                LIZARDCODE = 5;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "07", 2) == 0){
+                
+                LIZARDCODE = 6;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "08", 2) == 0){
+                
+                LIZARDCODE = 7;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "09", 2) == 0){
+                
+                LIZARDCODE = 8;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "10", 2) == 0){
+                
+                LIZARDCODE = 9;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "11", 2) == 0){
+                
+                LIZARDCODE = 10;
+                LIZARDBOOL = false;
+
+            }
+            else if(strncmp(ptr2, "12", 2) == 0){
+                
+                LIZARDCODE = 11;
+                LIZARDBOOL = false;
+
+            }
+        }
+         
+        else if((strncmp(ptr1, "R", 1)) == 0){
+            if(strncmp(ptr2, "01", 2) == 0){
+                
+                LIZARDCODE = 0;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "02", 2) == 0){
+                
+                LIZARDCODE = 1;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "03", 2) == 0){
+                
+                LIZARDCODE = 2;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "04", 2) == 0){
+                
+                LIZARDCODE = 3;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "05", 2) == 0){
+                
+                LIZARDCODE = 4;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "06", 2) == 0){
+                
+                LIZARDCODE = 5;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "07", 2) == 0){
+                
+                LIZARDCODE = 6;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "08", 2) == 0){
+                
+                LIZARDCODE = 7;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "09", 2) == 0){
+                
+                LIZARDCODE = 8;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "10", 2) == 0){
+                
+                LIZARDCODE = 9;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "11", 2) == 0){
+                
+                LIZARDCODE = 10;
+                LIZARDBOOL = true;
+
+            }
+            else if(strncmp(ptr2, "12", 2) == 0){
+                
+                LIZARDCODE = 11;
+                LIZARDBOOL = true;
+
+            }
+        }
+    } 
+}
+
+
+
+
+int main() {
+
+//-------------------------------------------------Threads--------------------------------------------------------------
+
+    int data =0;
+
+    thread_1 = al_create_thread(Func_Thread1, &data);
+    al_start_thread(thread_1);
+    thread_2 = al_create_thread(Func_Thread2, &data);
+    al_start_thread(thread_2);
+//----------------------------------------------------------------------------------------------------------------------
+    printf("Done\n");
+
+    //Loop to keep the program running
+    while(vidas != 0){}
+
+    return 0;
+}
+
+
+static void *Func_Thread1(ALLEGRO_THREAD *thr, void *arg) {
+
+    int sockfd, connfd;
+    struct sockaddr_in servaddr, cli;
+
+    // socket create and varification
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd == -1) {
+        printf("socket creation failed...\n");
+        exit(0);
+    }
+    else
+        printf("Socket successfully created..\n");
+    bzero(&servaddr, sizeof(servaddr));
+
+    // assign IP, PORT
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = inet_addr("192.168.43.209");
+    servaddr.sin_port = htons(PORT);
+
+    // connect the client socket to server socket
+    if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr)) != 0) {
+        printf("connection with the server failed...\n");
+        exit(0);
+    }
+    else
+        printf("connected to the server..\n");
+
+    while (!al_get_thread_should_stop(thr)) {
+
+
+        func(sockfd);
+
+    }
+        return NULL;
+
+}
+
+static void *Func_Thread2(ALLEGRO_THREAD *thr, void *arg) {
+
+    while (!al_get_thread_should_stop(thr)) {
+
+        newGame();
+    }
+    
+    return NULL;
 
 }
 
@@ -35,6 +296,20 @@ void newGame(){
     al_init();
     al_init_image_addon();
     al_init_primitives_addon();
+
+
+    if(!al_install_audio()){
+      fprintf(stderr, "failed to initialize audio!\n");
+      return;
+   }
+    if(!al_init_acodec_addon()){
+      fprintf(stderr, "failed to initialize audio codecs!\n");
+      return;
+    }
+	
+    ALLEGRO_SAMPLE *sample=NULL;
+
+    sample = al_load_sample( "Sprites/A Thousand Miles [8 Bit Tribute to Vanessa Carlton] - 8 Bit Universe.wav" );
 
 
     ALLEGRO_BITMAP *background;
@@ -50,12 +325,16 @@ void newGame(){
     ALLEGRO_DISPLAY *display = al_create_display(width*multSize,height*multSize);
 
 
+    ALLEGRO_BITMAP * pointSheet = al_load_bitmap("Sprites/NES - Donkey Kong Jr - Fields.png");
+
+
     ALLEGRO_EVENT_QUEUE * queue;
     ALLEGRO_TIMER * timer;
 
     struct Node *platList = NULL;
     struct Node *fruitList = NULL;
     struct Node *lianasList = NULL;
+    struct Node *lizardList = NULL;
     unsigned spriteSize = sizeof(struct Sprite);
 
     //Creacion de plataformas
@@ -91,8 +370,8 @@ void newGame(){
 
     assert(player.spriteSheet != NULL);
 
-    player.x= width*multSize/2;
-    player.y = height*multSize/2;
+    player.x= 1*multSize;
+    player.y = 184*multSize;
     player.w = (playerImageX2[player.imageInd] - playerImageX1[player.imageInd])*multSize;
     player.h = (playerImageY2[player.imageInd] - playerImageY1[player.imageInd])*multSize;
     player.velX = 0;
@@ -115,7 +394,11 @@ void newGame(){
 
     int count = 0;
     int fruitCounter = 0;
-    int points = 0;
+
+    int lianaind = 0;
+
+    al_play_sample(sample, 1.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
+ 
 
     while(running) {
         ALLEGRO_EVENT event;
@@ -124,7 +407,28 @@ void newGame(){
 //----------------------- Event Detection ---------------------------------------------------------------------------------
         
 
-       //Platform collition
+        //Platform collition
+        if(player.x < 96*multSize && player.y < 64*multSize){
+
+            vidas++;
+            running = false;
+
+        }
+
+        if(player.x < 0 - player.w || player.x > width*multSize){
+
+            vidas--;
+            running = false;
+        }
+
+        if(player.y > height*multSize){
+
+            vidas--;
+            running = false;
+
+        }
+
+
         if(isCollidingWithAny(&player,platList)){
 
             colliding = true;
@@ -152,7 +456,14 @@ void newGame(){
 
         if(allFruitCollide(&player, fruitList)){
 
-            points += 500;
+            points += 1;
+
+        }
+
+        if(allFruitCollide(&player, lizardList)){
+
+            vidas--;
+            running = false;
 
         }
 
@@ -206,6 +517,7 @@ void newGame(){
                     break;
                 //P,K and L are used for debugging
                 case ALLEGRO_KEY_P:
+                    createLizard(&lizardList, lianaind, true);
                     break;
                 case ALLEGRO_KEY_K:
                     break;
@@ -214,8 +526,15 @@ void newGame(){
             }
         }
 
+        
+
         if(event.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             running = false;
+        }
+
+        if(LIZARDCODE != -1){
+            createLizard(&lizardList, LIZARDCODE, LIZARDBOOL);
+            LIZARDCODE = -1;
         }
         
 //----------------------- Updates ------------------------------------------------------------------------------
@@ -291,6 +610,7 @@ void newGame(){
 
         //Actualizar jugador antesde dibujarlo en pantalla
         updatePlayer(&player);
+        updateAllLizards(lizardList);
 
         if (event.type == ALLEGRO_EVENT_TIMER) {
 
@@ -300,14 +620,10 @@ void newGame(){
             //Drawing sprites, background and enemies
             al_clear_to_color(al_map_rgb_f(255,0,0));
             al_draw_scaled_bitmap(background,0,0,width,height,0,0,width*multSize,height*multSize,0);
-            drawPlatRects(platList);
-            drawPlatRects(lianasList);
-            drawPlatRects(fruitList);
-
-            al_draw_rectangle(player.x, player.y, player.x + player.w, player.y + player.h,
-                al_map_rgb_f(255,0,0), 2.0);
+            
 
             drawPlayer(&player);
+            drawAllLizards(lizardList);
             drawFruits(fruitList);
             if(count > 15){
                 if(player.velX != 0 && (player.movingR || player.movingL)) {
@@ -330,7 +646,8 @@ void newGame(){
                 fruitCounter = 10;
             }
             char text = points;
-            drawPoints(points, width, height);
+            drawPoints(points, width, height, pointSheet);
+            drawLives(vidas, width, height, pointSheet);
             al_flip_display();
         }
     }

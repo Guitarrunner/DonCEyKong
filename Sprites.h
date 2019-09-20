@@ -10,6 +10,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <math.h>
 #include "LinkedList.h"
 #include "Sprites.c"
 #include "Const.h"
@@ -38,7 +39,8 @@ struct Sprite{
     bool jumping;
     bool climbing;
     bool climbingUp;
-    bool isroja;
+    bool isRoja;
+
 
     int imageInd, hammerInd;
 
@@ -54,17 +56,18 @@ struct Barrel{
 
 };
 
-//--------------------------------Done------------------------------------------
+//--------------------------------Terminado------------------------------------------
 
-void drawPoints(int points, int screenWidth, int screenHeight){
-    ALLEGRO_BITMAP * spriteSheet = al_load_bitmap("Sprites/NES - Donkey Kong Jr - Fields.png");
+void drawPoints(int points, int screenWidth, int screenHeight, ALLEGRO_BITMAP * spriteSheet){
 
-    int ind1, ind2;
+    int ind1, ind2, refPoints;
 
-    if(points != 0){
-    ind1 = points%10-1;
-    ind2 = points%100-1;
-}
+    refPoints = points;
+
+    if(refPoints > 0){
+    ind1 = refPoints%10;
+    ind2 = ((int)floor(refPoints/10))%10;
+}   
     else ind1 = 0 , ind2 = 0;
 
     al_draw_scaled_bitmap(spriteSheet,
@@ -77,6 +80,27 @@ void drawPoints(int points, int screenWidth, int screenHeight){
 
 }
 
+void drawLives(int points, int screenWidth, int screenHeight, ALLEGRO_BITMAP * spriteSheet){
+
+    int ind1, ind2, refPoints;
+
+    refPoints = points;
+
+    if(refPoints > 0){
+    ind1 = refPoints%10;
+    ind2 = ((int)floor(refPoints/10))%10;
+}   
+    else ind1 = 0 , ind2 = 0;
+
+    al_draw_scaled_bitmap(spriteSheet,
+                              numImageX[ind1],numImageY[ind1], 7, 7,
+                              screenWidth*multSize - 100, 40,14, 14, 0);
+
+    al_draw_scaled_bitmap(spriteSheet,
+                              numImageX[ind2],numImageY[ind2], 7, 7,
+                              screenWidth*multSize - 114, 40,14, 14, 0);
+
+}
 
 struct Sprite createPlatform(float x1, float y1, float x2, float y2){
 
@@ -199,18 +223,110 @@ void drawFruits(struct Node* node){
 
 }
 
+void createLizard(struct Node** node, int liana, bool isRoja){
+    struct Sprite lizard;
+    srand(time(NULL));
+    int xInd = liana;
+    lizard.x = lianaX1[xInd]*multSize;
+
+    lizard.y = lianaY1[xInd]*multSize;
+
+    lizard.w = 7;
+
+    lizard.h = 14;
+    lizard.climbing = false;
+
+    lizard.bx = lizard.y;
+    lizard.by = lianaY2[xInd]*multSize;
+
+    lizard.isRoja = isRoja;
+
+    lizard.spriteSheet = al_load_bitmap("Sprites/NES - Donkey Kong Jr - General Sprites.png");
+
+    push(node,&lizard,sizeof(struct Sprite));
+
+
+
+
+}
+
 void updateLizard(struct Sprite *lizard){
-   bool up = false;
-   if (lizard->isroja){
-	if (up) lizard->y--;
+   if (lizard->isRoja){
+
+	if (lizard->climbing) lizard->y--;
 	else lizard->y++;
-	if (inEnd(lizard)) up = true;
-	if (inTop(lizard)) up =false;
+
+	if (lizard->y >= lizard->by) lizard->climbing = true;
+	if (lizard->y <= lizard->bx) lizard->climbing =false;
    }
    else{
-      lizard->y++;
+        lizard->y++;
    }
 }
+
+void updateAllLizards(struct Node* node){
+
+
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+        
+        updateLizard(target);
+
+        node = node->next;
+    }
+
+
+}
+
+void drawAllLizards(struct Node* node){
+
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        if(!target->isRoja){
+
+            if(target->climbing){
+                al_draw_scaled_bitmap(target->spriteSheet,
+                                    96,136, target->w, target->h,
+                                    target->x,target->y,target->w*2, target->h*2, ALLEGRO_FLIP_VERTICAL);
+            }
+            else{
+                al_draw_scaled_bitmap(target->spriteSheet,
+                                    96,136, target->w, target->h,
+                                    target->x,target->y,target->w*2, target->h*2, 0);
+            
+            }
+        }
+        else{
+            if(target->climbing){
+
+            al_draw_scaled_bitmap(target->spriteSheet,
+                                    32,136, target->w, target->h,
+                                    target->x,target->y,target->w*2, target->h*2, ALLEGRO_FLIP_VERTICAL);
+            }
+            else{
+                al_draw_scaled_bitmap(target->spriteSheet,
+                                    32,136, target->w, target->h,
+                                    target->x,target->y,target->w*2, target->h*2, 0);
+            }
+
+        
+        }
+
+        node = node->next;
+    }
+
+
+}
+
 
 bool inEnd(struct Sprite *lizard ){
    const int lianaY2[12] = {199,191,151,199,175,143,175,159,135,135,175,175};

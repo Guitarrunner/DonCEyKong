@@ -35,6 +35,11 @@ void updateLizard(struct Sprite *lizard);
 bool inEnd(struct Sprite *lizard );
 bool inTop(struct Sprite *lizard );
 void drawFruits(struct Node* node);
+void createLizard(struct Node** node, int liana, bool isRoja);
+void updateAllLizards(struct Node* node);
+void drawAllLizards(struct Node* node);
+void drawLives(int points, int screenWidth, int screenHeight, ALLEGRO_BITMAP * spriteSheet);
+
 
 
 /*

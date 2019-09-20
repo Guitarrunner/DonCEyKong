@@ -24,7 +24,12 @@ void func(int sockfd)
         bzero(buff, sizeof(buff)); 
         read(sockfd, buff, sizeof(buff)); 
         printf("From Server : %s", buff); 
-        break; 
+
+        for(int i = 0; i < 3; i++){
+
+            printf("%d\n",buff[i]);
+
+        }
          
     } 
 }
@@ -46,7 +51,7 @@ int main()
   
     // assign IP, PORT 
     servaddr.sin_family = AF_INET; 
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+    servaddr.sin_addr.s_addr = inet_addr("192.168.43.209"); 
     servaddr.sin_port = htons(PORT); 
      
     // connect the client socket to server socket 
