@@ -20,6 +20,15 @@ void genAllPlats(struct Node** node, unsigned spriteSize);
 void genAllLianas(struct Node** node, unsigned spriteSize);
 struct Sprite createPlatform(float x1, float y1, float x2, float y2);
 void drawPlatRects(struct Node *node);
+struct Sprite allocateSprite();
+void updatePlayer(struct Sprite *player);
+bool isTopColliding(struct Sprite * player, struct Sprite target);
+bool isColliding(struct Sprite *sprite, struct Sprite target);
+bool isCollidingWithAny(struct Sprite* sprite, struct Node *node);
+bool isTopCollidingWithAny(struct Sprite *player, struct Node *node);
+bool ladderCollide(struct Sprite *player, struct Sprite *ladder);
+bool allLadderCollide(struct Sprite* player, struct Node *node);
+
 
 
 
@@ -28,7 +37,6 @@ void drawSprite(struct Sprite *sprite);
 
 struct Sprite createPlayer(float x, float y);
 
-struct Sprite allocateSprite();
 
 void drawPlayer(struct Sprite * player);
 

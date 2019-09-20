@@ -27,9 +27,9 @@ struct Sprite{
 
     int dirX, dirY;
 
-    int bx, by;
-
     int w, h;
+
+    int bx, by;
 
     bool movingR;
     bool movingL;
@@ -54,6 +54,7 @@ struct Barrel{
 };
 
 //--------------------------------Done------------------------------------------
+
 /*
  * Description:  Creates a platform using its coordinates
  * Input: X, Y
@@ -71,7 +72,6 @@ struct Sprite createPlatform(float x1, float y1, float x2, float y2){
 
     return plat;
 }
-
 
 /*
  *  Sirve para las plataformas
@@ -104,7 +104,6 @@ void genAllLianas(struct Node** node, unsigned spriteSize){
 
 }
 
-
 void drawPlatRects(struct Node *node){
 
     struct Sprite * target;
@@ -121,7 +120,162 @@ void drawPlatRects(struct Node *node){
 
 }
 
-//-------------------------------------------------------------------------------
+struct Sprite allocateSprite(){
+
+    return *((struct Sprite*) malloc(sizeof(struct Sprite)));
+
+}
+
+
+void updatePlayer(struct Sprite *player){
+
+    if(!player->climbing) {  
+        player->y += player->velY;
+    }
+
+    player->accX += player->velX * FRICC;
+    player->velX += player->accX;
+    player->x += player->velX + player->accX * ACC;
+
+    if(abs(round(player->velX)) < 0.01){
+
+        player->accX = 0;
+        player->movingR = false;
+        player->movingL = false;
+
+    }
+}
+
+bool isColliding(struct Sprite *sprite, struct Sprite target){
+    if(sprite->y + sprite->h < target.y + target.h -2 &&
+            sprite->x < target.x  + target.w &&
+       sprite->x + sprite->w > target.x&&
+       sprite->y + sprite->h > target.y +2){
+
+        if(!sprite->climbing) {
+            sprite->y = target.y + 2 - sprite->h;
+        }
+        sprite->jumping = false;
+        return true;
+
+    }
+    else{
+
+        return false;
+
+    }
+
+}
+
+bool isCollidingWithAny(struct Sprite *player, struct Node *node){
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        if(isColliding(player,*target)){
+
+            return true;
+
+        }
+
+        node = node->next;
+    }
+
+
+    return false;
+
+}
+
+bool isTopColliding(struct Sprite * sprite, struct Sprite target){
+
+
+    if(sprite->y < target.y + target.h &&
+       sprite->x < target.x  + target.w &&
+       sprite->x + sprite->w > target.x&&
+       sprite->y > target.y){
+
+
+        if(!sprite->climbing) {
+            sprite->y = target.y + target.h + 1;
+        }
+        return true;
+
+    }
+    else {return false;}
+
+}
+
+bool isTopCollidingWithAny(struct Sprite *player, struct Node *node){
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        if(isTopColliding(player,*target)){
+
+            return true;
+
+        }
+
+        node = node->next;
+    }
+
+
+    return false;
+
+}
+
+//Colision de lianas
+bool ladderCollide(struct Sprite *player, struct Sprite *ladder){
+
+    float playerBottom = player->y + player->h;
+
+    if(playerBottom > ladder->y &&
+       player->x > ladder->x-player->w &&
+       player->x < ladder->x+5 + ladder->w &&
+       playerBottom < ladder->y + ladder->h){
+
+
+        return true;
+
+    }
+    else{
+
+        return false;
+
+    }
+
+
+}
+
+bool allLadderCollide(struct Sprite* player, struct Node *node){
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        if(ladderCollide(player,target)){
+
+            return true;
+
+        }
+
+        node = node->next;
+    }
+
+
+    return false;
+
+}
+
+//--------------------------------------------------------------------------------
 
 /*
 
@@ -361,11 +515,7 @@ void drawSprite(struct Sprite *sprite){
 
 
 
-struct Sprite allocateSprite(){
 
-    return *((struct Sprite*) malloc(sizeof(struct Sprite)));
-
-}
 
 
 
