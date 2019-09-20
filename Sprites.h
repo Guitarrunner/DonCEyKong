@@ -79,10 +79,10 @@ struct Sprite createPlatform(float x1, float y1, float x2, float y2){
 void genAllPlats(struct Node** node, unsigned spriteSize){
 
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
 
         struct Sprite plat = createPlatform(platX1[i]*multSize, platY1[i]*multSize,
-         platX2[i]*multSize, platY2[i]*multSize);
+         platX2[i]*multSize+2, platY2[i]*multSize+2);
 
         push(node,&plat,spriteSize);
     }
@@ -99,7 +99,7 @@ void drawPlatRects(struct Node *node){
         target = (struct Sprite *)node->data;
 
         al_draw_rectangle(target->x, target->y, target->x + target->w, target->y+target->h,
-        al_map_rgb_f(255,0,0), 2.0);
+        al_map_rgb_f(0,255,0), 2.0);
 
         node = node->next;
     }
