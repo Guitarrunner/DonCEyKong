@@ -12,13 +12,12 @@ public class GreetServer {
 
 
     public void start(int port) throws IOException {
-    	InetAddress ip = InetAddress.getByName("192.168.43.209");
+    	InetAddress ip = InetAddress.getByName("127.0.0.1");
         serverSocket = new ServerSocket(port,1,ip);
         clientSocket = serverSocket.accept();
         out = new PrintWriter(clientSocket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        System.out.println("Perro1");
-
+        
         String inputLine;
         while (true) {
         	System.out.println("Existen dos tipos de enemigos, rojos y azules");
