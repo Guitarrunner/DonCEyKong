@@ -146,6 +146,37 @@ void updatePlayer(struct Sprite *player){
     }
 }
 
+void updateLizard(struct Sprite *lizard){
+   boolean up = false;
+   if (lizard->isroja()){
+	if (up) lizard->y--;
+	else lizar->y++;
+	if (inEnd(lizard)) up = true;
+	if (inTop(lizard)) up =false;
+   }
+   else{
+      lizard->y++;
+   }
+}
+
+bool inEnd(struct Sprite *lizard ){
+   const int lianaY2[12] = {199,191,151,199,175,143,175,159,135,135,175,175};
+   for(i=0; i<12; ++i)
+     {
+        if(lizar->y == lianaY2[i]) return true;
+     }
+    return false;
+}
+
+bool inTop(struct Sprite *lizard ){
+   const int lianaY1[12] = {72,72,120,160,72,72,80,80,0,0,144,144};
+   for(i=0; i<12; ++i)
+     {
+        if(lizar->y == lianaY1[i]) return true;
+     }
+    return false;
+}
+
 bool isColliding(struct Sprite *sprite, struct Sprite target){
     if(sprite->y + sprite->h < target.y + target.h -2 &&
             sprite->x < target.x  + target.w &&
