@@ -4,13 +4,14 @@
 
 #ifndef UNTITLED_SPRITE_H
 #define UNTITLED_SPRITE_H
+
 #include <allegro5/bitmap.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include "LinkedList.h"
-#include "Sprite.c"
+#include "Sprites.c"
 #include "Const.h"
 
 const float VEL = 1;
@@ -52,13 +53,63 @@ struct Barrel{
 
 };
 
-
+//--------------------------------Done------------------------------------------
 /*
- * Description: Creates a barrel and pushes it into the list
- * Input: X, Y, Barrel type, Barrel list, Barrel Size
- * Output: None
+ * Description:  Creates a platform using its coordinates
+ * Input: X, Y
+ * Output: Sprite struct
  *
  * */
+struct Sprite createPlatform(float x1, float y1, float x2, float y2){
+
+    struct Sprite plat;
+    plat.x = x1;
+    plat.y = y1;
+
+    plat.h = y2-y1;
+    plat.w = x2-x1;
+
+    return plat;
+}
+
+
+/*
+ *  Sirve para las plataformas
+ */
+void genAllPlats(struct Node** node, unsigned spriteSize){
+
+
+    for (int i = 0; i < 5; ++i) {
+
+        struct Sprite plat = createPlatform(platX1[i]*multSize, platY1[i]*multSize,
+         platX2[i]*multSize, platY2[i]*multSize);
+
+        push(node,&plat,spriteSize);
+    }
+
+
+}
+
+void drawPlatRects(struct Node *node){
+
+    struct Sprite * target;
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        al_draw_rectangle(target->x, target->y, target->x + target->w, target->y+target->h,
+        al_map_rgb_f(255,0,0), 2.0);
+
+        node = node->next;
+    }
+
+}
+
+//-------------------------------------------------------------------------------
+
+/*
+
 void createBarrel(float x, float y,int type, struct Node **node, int spriteSize){
 
     struct Barrel barrel;
@@ -124,14 +175,7 @@ void createBarrel(float x, float y,int type, struct Node **node, int spriteSize)
 }
 
 
-/*
- * Description: Returns a boolean that indicates if the barrel is colliding with a platform
- * Input: Barrel struct, Sprite struct
- * Output: True/False
- *
- * |||All the collition checking functions work the same way, because of that, there will be no documentation for other "is_X_Colliding" function
- *
- * */
+
 
 bool isBarrelColliding(struct Barrel *sprite, struct Sprite target){
 
@@ -155,12 +199,6 @@ bool isBarrelColliding(struct Barrel *sprite, struct Sprite target){
 }
 
 
-/*
- * Description: Updates the index of all the barrels. The index is used to select the image for the animation
- * Input: Barrel list
- * Output: None
- *
- * */
 void updateBarrelInds(struct Node *node){
 
     struct Barrel * target;
@@ -194,9 +232,9 @@ bool isBarrelCollidingAll(struct Barrel *barrel, struct Node *node){
 
 }
 
-/*
+
 Modificar para lagartos
- */
+ 
 
 void updateAllBarrels(struct Node *node, struct Node *platList, int level){
     struct Barrel * target;
@@ -213,9 +251,9 @@ void updateAllBarrels(struct Node *node, struct Node *platList, int level){
 }
 
 
-/*
+
  Modificar para lagartos
- */
+ 
 
 void updateBarrel(struct Barrel *barrel, struct Node *node, int level){
 
@@ -297,12 +335,7 @@ void updateBarrel(struct Barrel *barrel, struct Node *node, int level){
 }
 
 
-/*
- * Description: Draws a generic sprite
- * Input: Sprite struct
- * Output: None
- *
- * */
+
 
 void drawSprite(struct Sprite *sprite){
 
@@ -311,12 +344,6 @@ void drawSprite(struct Sprite *sprite){
 }
 
 
-/*
- * Description:  Allocates a sprite in memory
- * Input: None
- * Output: Sprite struct
- *
- * */
 
 
 struct Sprite allocateSprite(){
@@ -326,12 +353,7 @@ struct Sprite allocateSprite(){
 }
 
 
-/*
- * Description:  Draws the image of the player using the imageInd value
- * Input: Player struct
- * Output: None
- *
- * */
+
 void drawPlayer(struct Sprite *player){
 
     if(player->jumping){
@@ -385,12 +407,7 @@ void drawPlayer(struct Sprite *player){
 
 }
 
-/*
- * Description:  Updates the position of the player
- * Input: Player struct
- * Output: None
- *
- * */
+
 void updatePlayer(struct Sprite *player){
 
     if(!player->climbing) {
@@ -413,23 +430,6 @@ void updatePlayer(struct Sprite *player){
 }
 
 
-/*
- * Description:  Creates a platform using its coordinates
- * Input: X, Y
- * Output: Sprite struct
- *
- * */
-struct Sprite createPlatform(float x1, float y1, float x2, float y2){
-
-    struct Sprite plat;
-    plat.x = x;
-    plat.y = y;
-
-    plat.h = x2-x1;
-    plat.w = y2-y1;
-
-    return plat;
-}
 
 //Creacion de lianas
 struct Sprite createLadder(float x1, float y1, float x2, float y2){
@@ -671,26 +671,6 @@ bool allHammerCollide(struct Sprite* player, struct Node *node){
 //------------------------------------------------
 
 
-/*
-    Sirve para las plataformas
- */
-
-
-void genAllPlats(struct Node** node, unsigned spriteSize){
-
-    float x = PLAT_COORDSX1*1.15;
-    float y = PLAT_COORDSY1*1.15;
-
-    for (int i = 0; i < 7; ++i) {
-
-        struct Sprite plat = createPlatform(platX1[i], platY1[i], platX2[i], platY2[i]);
-
-        push(node,&plat,spriteSize);
-    }
-
-
-}
-
 
 //Sirve para las lianas
 
@@ -711,10 +691,8 @@ void genLadders(struct Node** node, unsigned spriteSize){
 
 
 
-/*
 
- Sirve para la creación de frutas
- */
+
 
 struct Sprite createHammer(int ind){
 
@@ -728,6 +706,6 @@ struct Sprite createHammer(int ind){
     return hammer;
 
 }
-
+*/
 
 #endif //UNTITLED_SPRITE_H

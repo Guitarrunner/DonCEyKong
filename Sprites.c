@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
-#include "Sprite.h"
+#include "Sprites.h"
 
 const float VEL;
 
@@ -16,6 +16,13 @@ const float VEL;
 struct Sprite;
 struct Barrel;
 
+void genAllPlats(struct Node** node, unsigned spriteSize);
+struct Sprite createPlatform(float x1, float y1, float x2, float y2);
+void drawPlatRects(struct Node *node);
+
+
+
+/*
 void drawSprite(struct Sprite *sprite);
 
 struct Sprite createPlayer(float x, float y);
@@ -28,7 +35,6 @@ void updatePlayer(struct Sprite *player);
 
 void showHitbox(struct Sprite sprite);
 
-struct Sprite createPlatform(float x, float y);
 
 bool isBottomColliding(struct Sprite * player, struct Sprite * target);
 
@@ -67,6 +73,6 @@ void genLadders(struct Node** node, unsigned spriteSize);
 bool ladderCollide(struct Sprite *player, struct Sprite *ladder);
 
 bool allLadderCollide(struct Sprite* player, struct Node *node);
-
+*/
 
 

@@ -12,14 +12,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include "Sprites.c"
+#include "Const.h"
 #define MAX 80
 
-const int WIDTH = 600;
-const int HEIGHT = 600;
-const double FPS  = 1.0/60;
-const int multSize = 3.5;
-bool running = true;
-enum KEYS {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE};
 
 
 //Main game function
@@ -56,6 +52,13 @@ void newGame(){
 
     ALLEGRO_EVENT_QUEUE * queue;
     ALLEGRO_TIMER * timer;
+
+    struct Node *platList = NULL;
+    unsigned spriteSize = sizeof(struct Sprite);
+
+    //Creacion de plataformas
+
+    genAllPlats(&platList, spriteSize);
 
 
     queue = al_create_event_queue();
@@ -159,6 +162,7 @@ void newGame(){
             //Drawing sprites, background and enemies
             al_clear_to_color(al_map_rgb_f(255,0,0));
             al_draw_scaled_bitmap(background,0,0,width,height,0,0,width*multSize,height*multSize,0);
+            drawPlatRects(platList);
 
 /*              IMPORTANTE PARA LAS ANIMACIONES
 

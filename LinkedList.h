@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include "Sprite.h"
 // C program for generic linked list
 #include<stdio.h>
 #include<stdlib.h>
