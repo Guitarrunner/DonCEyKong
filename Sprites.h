@@ -90,6 +90,21 @@ void genAllPlats(struct Node** node, unsigned spriteSize){
 
 }
 
+void genAllLianas(struct Node** node, unsigned spriteSize){
+
+
+    for (int i = 0; i < 12; ++i) {
+
+        struct Sprite plat = createPlatform(1+lianaX1[i]*multSize, lianaY1[i]*multSize,
+         lianaX2[i]*multSize+2, lianaY2[i]*multSize+2);
+
+        push(node,&plat,spriteSize);
+    }
+
+
+}
+
+
 void drawPlatRects(struct Node *node){
 
     struct Sprite * target;
@@ -99,7 +114,7 @@ void drawPlatRects(struct Node *node){
         target = (struct Sprite *)node->data;
 
         al_draw_rectangle(target->x, target->y, target->x + target->w, target->y+target->h,
-        al_map_rgb_f(0,255,0), 2.0);
+        al_map_rgb_f(255,0,0), 2.0);
 
         node = node->next;
     }
