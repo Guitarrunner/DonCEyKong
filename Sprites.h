@@ -36,11 +36,10 @@ struct Sprite{
     bool lastR;
     bool jumping;
     bool climbing;
-    bool hammer;
+    bool climbingUp;
 
     int imageInd, hammerInd;
 
-    ALLEGRO_BITMAP *image[3];
     ALLEGRO_BITMAP *spriteSheet;
 
 };
@@ -233,7 +232,7 @@ bool isTopCollidingWithAny(struct Sprite *player, struct Node *node){
 //Colision de lianas
 bool ladderCollide(struct Sprite *player, struct Sprite *ladder){
 
-    float playerBottom = player->y + player->h;
+    float playerBottom = player->y ;
 
     if(playerBottom > ladder->y &&
        player->x > ladder->x-player->w &&
@@ -249,6 +248,53 @@ bool ladderCollide(struct Sprite *player, struct Sprite *ladder){
         return false;
 
     }
+
+
+}
+
+bool corregirPosicionLiana(struct Sprite *player, struct Sprite *ladder){
+
+    float playerBottom = player->y ;
+
+        if(playerBottom > ladder->y &&
+        player->x > ladder->x-player->w &&
+        player->x < ladder->x+5 + ladder->w &&
+        playerBottom < ladder->y + ladder->h){
+
+
+            return true;
+
+        }
+        else{
+
+            return false;
+
+        }
+
+}
+
+void corregirPosicionLianaFinal(struct Sprite* player, struct Node *node){
+
+
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        if(corregirPosicionLiana(player,target)){
+            
+            if(player->lastR) player->x = target->x + target->w + 6;
+            else player->x = target->x - player->w - 5;
+            return;
+        }
+
+        node = node->next;
+    }
+
+
+    return;
 
 
 }
@@ -272,6 +318,89 @@ bool allLadderCollide(struct Sprite* player, struct Node *node){
 
 
     return false;
+
+}
+
+
+void drawPlayer(struct Sprite *player){
+
+    if(player->climbing){
+        if (player->climbingUp){
+            al_draw_scaled_bitmap(player->spriteSheet,
+                34, 16, 52-34, 31-16,
+                player->x, player->y, (52-34)*multSize, (31-16)*multSize, ALLEGRO_FLIP_HORIZONTAL);
+
+            player->w = (52-34)*multSize;
+        }
+
+        else if(player->lastR) {
+            al_draw_scaled_bitmap(player->spriteSheet,
+                                  96, 16, 126-96, 31-16,
+                                  player->x, player->y, (126-96)*multSize, (31-16)*multSize, ALLEGRO_FLIP_HORIZONTAL);
+            player->w = (126-96)*multSize;
+        }
+
+        else{
+            al_draw_scaled_bitmap(player->spriteSheet,
+                                  96, 16, 126-96, 31-16,
+                                  player->x, player->y, (126-96)*multSize, (31-16)*multSize, 0);
+            player->w =(126-96)*multSize;
+        }
+
+    }
+
+    else if(player->movingR){
+
+        al_draw_scaled_bitmap(player->spriteSheet,
+            playerImageX1[player->imageInd], 0,
+            (playerImageX2[player->imageInd] - playerImageX1[player->imageInd]), 
+                (playerImageY2[player->imageInd] - playerImageY1[player->imageInd]),
+            player->x, player->y, 
+            (playerImageX2[player->imageInd] - playerImageX1[player->imageInd]) * multSize,
+                (playerImageY2[player->imageInd] - playerImageY1[player->imageInd]) * multSize,
+            0);
+
+        player->w = (playerImageX2[player->imageInd] - playerImageX1[player->imageInd]) * multSize;
+        player->h = (playerImageY2[player->imageInd] - playerImageY1[player->imageInd]) * multSize;
+
+    }
+    else if(player->movingL){
+
+        al_draw_scaled_bitmap(player->spriteSheet,
+            playerImageX1[player->imageInd], 0,
+            (playerImageX2[player->imageInd] - playerImageX1[player->imageInd]), 
+                (playerImageY2[player->imageInd] - playerImageY1[player->imageInd]),
+            player->x, player->y, 
+            (playerImageX2[player->imageInd] - playerImageX1[player->imageInd]) * multSize,
+                (playerImageY2[player->imageInd] - playerImageY1[player->imageInd]) * multSize,
+            ALLEGRO_FLIP_HORIZONTAL);
+    }
+    else if(player->lastR){
+
+        al_draw_scaled_bitmap(player->spriteSheet,
+        playerImageX1[0], 0,
+        (playerImageX2[0] - playerImageX1[0]), 
+            (playerImageY2[0] - playerImageY1[0]),
+        player->x, player->y, 
+        (playerImageX2[0] - playerImageX1[0]) * multSize,
+             (playerImageY2[0] - playerImageY1[0]) * multSize,
+         0);
+
+    }
+    else{
+
+       
+        al_draw_scaled_bitmap(player->spriteSheet,
+        playerImageX1[0], 0,
+        (playerImageX2[0] - playerImageX1[0]), 
+            (playerImageY2[0] - playerImageY1[0]),
+        player->x, player->y, 
+        (playerImageX2[0] - playerImageX1[0]) * multSize,
+             (playerImageY2[0] - playerImageY1[0]) * multSize,
+         ALLEGRO_FLIP_HORIZONTAL);
+
+    }
+
 
 }
 
