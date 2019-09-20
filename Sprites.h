@@ -38,6 +38,7 @@ struct Sprite{
     bool jumping;
     bool climbing;
     bool climbingUp;
+    bool isroja;
 
     int imageInd, hammerInd;
 
@@ -55,12 +56,28 @@ struct Barrel{
 
 //--------------------------------Done------------------------------------------
 
-/*
- * Description:  Creates a platform using its coordinates
- * Input: X, Y
- * Output: Sprite struct
- *
- * */
+void drawPoints(int points, int screenWidth, int screenHeight){
+    ALLEGRO_BITMAP * spriteSheet = al_load_bitmap("Sprites/NES - Donkey Kong Jr - Fields.png");
+
+    int ind1, ind2;
+
+    if(points != 0){
+    ind1 = points%10-1;
+    ind2 = points%100-1;
+}
+    else ind1 = 0 , ind2 = 0;
+
+    al_draw_scaled_bitmap(spriteSheet,
+                              numImageX[ind1],numImageY[ind1], 7, 7,
+                              screenWidth*multSize - 20, 40,14, 14, 0);
+
+    al_draw_scaled_bitmap(spriteSheet,
+                              numImageX[ind2],numImageY[ind2], 7, 7,
+                              screenWidth*multSize - 34, 40,14, 14, 0);
+
+}
+
+
 struct Sprite createPlatform(float x1, float y1, float x2, float y2){
 
     struct Sprite plat;
@@ -73,9 +90,6 @@ struct Sprite createPlatform(float x1, float y1, float x2, float y2){
     return plat;
 }
 
-/*
- *  Sirve para las plataformas
- */
 void genAllPlats(struct Node** node, unsigned spriteSize){
 
 
@@ -147,24 +161,49 @@ void updatePlayer(struct Sprite *player){
 }
 
 void createFruit(struct Node **node, int spriteSize){
-   struct Sprite Fruit;
-   srand(time(NULL));
-   const int lianaX1[12] = {19,43,67,67,107,139,163,187,211,235,211,235};
-   int newx = rand(0,12);
-   int newy = rand(72,175);
-   Fruit->x= lianaX1[newx];
-   Fruit->y= newy;
+    struct Sprite Fruit;
+    srand(time(NULL));
+    int newx = rand() % 12;
+    int newy = (rand() % (175-72+1))+72;
+    Fruit.x= lianaX1[newx]*multSize;
+    Fruit.y= newy*multSize;
 
-   push(node,&Fruit,spriteSize);
-    
+    Fruit.w = 14;
+    Fruit.h = 10;
+
+    Fruit.spriteSheet = al_load_bitmap("Sprites/NES - Donkey Kong Jr - General Sprites.png");
+
+    push(node,&Fruit,spriteSize);
+        
 }
 
+void drawFruits(struct Node* node){
+
+
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        al_draw_scaled_bitmap(target->spriteSheet,
+                              16,99, target->w, target->h,
+                              target->x,target->y,target->w*2, target->h*2, 0);
+
+
+
+        node = node->next;
+    }
+
+
+}
 
 void updateLizard(struct Sprite *lizard){
-   boolean up = false;
-   if (lizard->isroja()){
+   bool up = false;
+   if (lizard->isroja){
 	if (up) lizard->y--;
-	else lizar->y++;
+	else lizard->y++;
 	if (inEnd(lizard)) up = true;
 	if (inTop(lizard)) up =false;
    }
@@ -175,18 +214,18 @@ void updateLizard(struct Sprite *lizard){
 
 bool inEnd(struct Sprite *lizard ){
    const int lianaY2[12] = {199,191,151,199,175,143,175,159,135,135,175,175};
-   for(i=0; i<12; ++i)
+   for(int i=0; i<12; ++i)
      {
-        if(lizar->y == lianaY2[i]) return true;
+        if(lizard->y == lianaY2[i]) return true;
      }
     return false;
 }
 
 bool inTop(struct Sprite *lizard ){
    const int lianaY1[12] = {72,72,120,160,72,72,80,80,0,0,144,144};
-   for(i=0; i<12; ++i)
+   for(int i=0; i<12; ++i)
      {
-        if(lizar->y == lianaY1[i]) return true;
+        if(lizard->y == lianaY1[i]) return true;
      }
     return false;
 }
@@ -449,6 +488,53 @@ void drawPlayer(struct Sprite *player){
 
 
 }
+
+
+bool fruitCollide(struct Sprite *sprite, struct Sprite * target){
+
+    if(sprite->y < target->y + target->h -2 &&
+       sprite->x < target->x  + target->w &&
+       sprite->x + sprite->w > target->x&&
+       sprite->y + sprite->h > target->y +2){
+
+
+        target->x = -500;
+        target->y = -500;
+
+        return true;
+
+    }
+    else{
+        return false;
+
+    }
+
+
+}
+
+bool allFruitCollide(struct Sprite* player, struct Node *node){
+    struct Sprite * target;
+
+
+    while (node != NULL)
+    {
+        target = (struct Sprite *)node->data;
+
+        if(fruitCollide(player,target)){
+
+            return true;
+
+        }
+
+        node = node->next;
+    }
+
+
+    return false;
+
+}
+
+
 
 //--------------------------------------------------------------------------------
 

@@ -38,7 +38,7 @@ void newGame(){
 
 
     ALLEGRO_BITMAP *background;
-    background = al_load_bitmap("Sprites/NES - Donkey Kong Jr - Fields.png");
+    background = al_load_bitmap("Sprites/map.png");
 
     assert(background != NULL);
    
@@ -54,6 +54,7 @@ void newGame(){
     ALLEGRO_TIMER * timer;
 
     struct Node *platList = NULL;
+    struct Node *fruitList = NULL;
     struct Node *lianasList = NULL;
     unsigned spriteSize = sizeof(struct Sprite);
 
@@ -113,6 +114,8 @@ void newGame(){
     al_start_timer(timer);
 
     int count = 0;
+    int fruitCounter = 0;
+    int points = 0;
 
     while(running) {
         ALLEGRO_EVENT event;
@@ -147,6 +150,11 @@ void newGame(){
         }
         else topColliding = false;
 
+        if(allFruitCollide(&player, fruitList)){
+
+            points += 500;
+
+        }
 
         //Keyboard detection
         if(event.type == ALLEGRO_EVENT_KEY_DOWN) {
@@ -287,18 +295,20 @@ void newGame(){
         if (event.type == ALLEGRO_EVENT_TIMER) {
 
             count++;
-            
+            fruitCounter++; 
+
             //Drawing sprites, background and enemies
             al_clear_to_color(al_map_rgb_f(255,0,0));
             al_draw_scaled_bitmap(background,0,0,width,height,0,0,width*multSize,height*multSize,0);
             drawPlatRects(platList);
             drawPlatRects(lianasList);
+            drawPlatRects(fruitList);
 
             al_draw_rectangle(player.x, player.y, player.x + player.w, player.y + player.h,
                 al_map_rgb_f(255,0,0), 2.0);
 
             drawPlayer(&player);
-
+            drawFruits(fruitList);
             if(count > 15){
                 if(player.velX != 0 && (player.movingR || player.movingL)) {
                     (&player)->imageInd += 1;
@@ -313,6 +323,14 @@ void newGame(){
 
                 count = 0;
             }
+            if(fruitCounter > 300){
+
+                createFruit(&fruitList, spriteSize);
+                printf("Fruta\n");
+                fruitCounter = 10;
+            }
+            char text = points;
+            drawPoints(points, width, height);
             al_flip_display();
         }
     }

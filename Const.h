@@ -29,4 +29,7 @@ const int playerImageY1[3] = {0,0,0};
 const int playerImageX2[3] = {59,29,91};
 const int playerImageY2[3] = {15,15,15};
 
+const int numImageX[10] = {1032, 1040, 1048, 1056, 1064, 1032, 1040, 1048, 1056, 1064};
+const int numImageY[10] = {34, 34, 34, 34, 34, 42, 42, 42, 42, 42};
+
 #endif //UNTITLED_CONST_H

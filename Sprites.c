@@ -30,7 +30,11 @@ void drawPlayer(struct Sprite *player);
 void corregirPosicionLianaFinal(struct Sprite* player, struct Node *node);
 bool corregirPosicionLiana(struct Sprite *player, struct Sprite *ladder);
 
-
+void createFruit(struct Node **node, int spriteSize);
+void updateLizard(struct Sprite *lizard);
+bool inEnd(struct Sprite *lizard );
+bool inTop(struct Sprite *lizard );
+void drawFruits(struct Node* node);
 
 
 /*
