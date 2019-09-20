@@ -13,6 +13,7 @@
 #include "LinkedList.h"
 #include "Sprites.c"
 #include "Const.h"
+#include <time.h>
 
 const float VEL = 1;
 
@@ -145,6 +146,20 @@ void updatePlayer(struct Sprite *player){
 
     }
 }
+
+void createFruit(struct Node **node, int spriteSize){
+   struct Sprite Fruit;
+   srand(time(NULL));
+   const int lianaX1[12] = {19,43,67,67,107,139,163,187,211,235,211,235};
+   int newx = rand(0,12);
+   int newy = rand(72,175);
+   Fruit->x= lianaX1[newx];
+   Fruit->y= newy;
+
+   push(node,&Fruit,spriteSize);
+    
+}
+
 
 void updateLizard(struct Sprite *lizard){
    boolean up = false;
