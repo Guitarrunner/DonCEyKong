@@ -26,8 +26,15 @@ bool isCollidingWithAny(struct Sprite* sprite, struct Node *node);
 bool isTopCollidingWithAny(struct Sprite *player, struct Node *node);
 bool ladderCollide(struct Sprite *player, struct Sprite *ladder);
 bool allLadderCollide(struct Sprite* player, struct Node *node);
+void drawPlayer(struct Sprite *player);
+void corregirPosicionLianaFinal(struct Sprite* player, struct Node *node);
+bool corregirPosicionLiana(struct Sprite *player, struct Sprite *ladder);
 
-
+void createFruit(struct Node **node, int spriteSize);
+void updateLizard(struct Sprite *lizard);
+bool inEnd(struct Sprite *lizard );
+bool inTop(struct Sprite *lizard );
+void drawFruits(struct Node* node);
 
 
 /*

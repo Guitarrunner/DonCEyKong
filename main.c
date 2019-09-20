@@ -38,7 +38,7 @@ void newGame(){
 
 
     ALLEGRO_BITMAP *background;
-    background = al_load_bitmap("Sprites/NES - Donkey Kong Jr - Fields.png");
+    background = al_load_bitmap("Sprites/map.png");
 
     assert(background != NULL);
    
@@ -54,6 +54,7 @@ void newGame(){
     ALLEGRO_TIMER * timer;
 
     struct Node *platList = NULL;
+    struct Node *fruitList = NULL;
     struct Node *lianasList = NULL;
     unsigned spriteSize = sizeof(struct Sprite);
 
@@ -86,10 +87,14 @@ void newGame(){
 
     struct Sprite player = allocateSprite();
 
+    player.spriteSheet = al_load_bitmap("Sprites/NES - Donkey Kong Jr - General Sprites.png");
+
+    assert(player.spriteSheet != NULL);
+
     player.x= width*multSize/2;
     player.y = height*multSize/2;
-    player.w = 10;
-    player.h = 20;
+    player.w = (playerImageX2[player.imageInd] - playerImageX1[player.imageInd])*multSize;
+    player.h = (playerImageY2[player.imageInd] - playerImageY1[player.imageInd])*multSize;
     player.velX = 0;
     player.velY = GRAV;
     player.accX = 0;
@@ -100,13 +105,17 @@ void newGame(){
     player.movingR = false;
     player.movingL = false;
     player.lastR = true;
-    player.hammer = false;
+    player.climbingUp = false;
     player.climbing = false;
 
     bool topColliding = false;
 
     bool running = true;
     al_start_timer(timer);
+
+    int count = 0;
+    int fruitCounter = 0;
+    int points = 0;
 
     while(running) {
         ALLEGRO_EVENT event;
@@ -141,6 +150,11 @@ void newGame(){
         }
         else topColliding = false;
 
+        if(allFruitCollide(&player, fruitList)){
+
+            points += 500;
+
+        }
 
         //Keyboard detection
         if(event.type == ALLEGRO_EVENT_KEY_DOWN) {
@@ -207,20 +221,8 @@ void newGame(){
 //----------------------- Updates ------------------------------------------------------------------------------
         if(key[KEY_SPACE]){
             if(player.climbing){
-                if(player.lastR){
-                    while(allLadderCollide(&player,lianasList)){
-                        
-                        player.x++;
-
-                    }
-                }
-                else if(!player.lastR){
-                    while(allLadderCollide(&player,lianasList)){
-                        
-                        player.x--;
-
-                    }
-                }
+                player.w = (playerImageX2[player.imageInd] - playerImageX1[player.imageInd])*multSize;
+                corregirPosicionLianaFinal(&player, lianasList);
             }
             if(!falling){
                 player.y -= JUMP;
@@ -229,24 +231,26 @@ void newGame(){
 
         }
         if(key[KEY_UP] && player.climbing && !topColliding){
-
+            player.climbingUp = true;
             player.y -= 1;
         }
+        else player.climbingUp = false;
 
         if(key[KEY_DOWN] && player.climbing){
-
+            player.climbingUp = true;
             player.y +=1;
 
         }
-        if(key[KEY_RIGHT]){
+        else player.climbingUp = false;
+
+        if(key[KEY_RIGHT] ){
 
             if(player.climbing){
-                while(allLadderCollide(&player,lianasList)){
-                        
-                        player.x++;
+                player.lastR = true;            
 
-                    }
-                player.x-=2;
+                corregirPosicionLianaFinal(&player, lianasList);
+
+                player.x-=29;
             }
             else{
                 player.movingR = true;
@@ -257,12 +261,10 @@ void newGame(){
         }
         if(key[KEY_LEFT]){
             if(player.climbing){
-                while(allLadderCollide(&player,lianasList)){
-                        
-                        player.x--;
+                player.lastR = false;            
+                corregirPosicionLianaFinal(&player, lianasList);
 
-                    }
-                player.x+=3;
+                player.x+=6;
             }
             else{
             player.accX = -ACC;
@@ -291,35 +293,45 @@ void newGame(){
         updatePlayer(&player);
 
         if (event.type == ALLEGRO_EVENT_TIMER) {
-            
+
+            count++;
+            fruitCounter++; 
+
             //Drawing sprites, background and enemies
             al_clear_to_color(al_map_rgb_f(255,0,0));
             al_draw_scaled_bitmap(background,0,0,width,height,0,0,width*multSize,height*multSize,0);
             drawPlatRects(platList);
             drawPlatRects(lianasList);
+            drawPlatRects(fruitList);
 
             al_draw_rectangle(player.x, player.y, player.x + player.w, player.y + player.h,
                 al_map_rgb_f(255,0,0), 2.0);
 
-/*              IMPORTANTE PARA LAS ANIMACIONES
+            drawPlayer(&player);
+            drawFruits(fruitList);
+            if(count > 15){
+                if(player.velX != 0 && (player.movingR || player.movingL)) {
+                    (&player)->imageInd += 1;
+                    (&player)->imageInd = (&player)->imageInd % 3;
+                }
+                //If the player isnt moving
+                if(!(player.movingR || player.movingL)){
 
-            //imageInd is used in the animation of the player and other sprites
-            if(player.velX != 0 && (player.movingR || player.movingL)) {
-                (&player)->imageInd += 1;
-                (&player)->imageInd = (&player)->imageInd % 2;
-                (&player)->hammerInd += 1;
-                (&player)->hammerInd = (&player)->hammerInd%3;
+                    player.imageInd = 0;
+
+                }
+
+                count = 0;
             }
-            //If the player isnt moving
-            if(!(player.movingR || player.movingL)){
+            if(fruitCounter > 300){
 
-                player.imageInd = 0;
-
-}
-*/
-
+                createFruit(&fruitList, spriteSize);
+                printf("Fruta\n");
+                fruitCounter = 10;
+            }
+            char text = points;
+            drawPoints(points, width, height);
             al_flip_display();
-
         }
     }
     al_destroy_display(display);
