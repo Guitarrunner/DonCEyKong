@@ -22,7 +22,7 @@ public class GreetServer {
         String inputLine;
         while (true) {
         	System.out.println("Existen dos tipos de enemigos, rojos y azules");
-        	System.out.println("Para enviar un enemigo Rojo digite R seguido de el numero de liana donde lo quiera colocar, use numeros de dos digitos del 00 al 11");
+        	System.out.println("Para enviar un enemigo Rojo digite R seguido de el numero de liana donde lo quiera colocar, use numeros de dos digitos del 01 al 12");
         	System.out.println("Ejemplo: R09");
         	System.out.println("Para enviar un enemigo Azul siga el mismo procedimiento pero empezando con la A y luego el numero de liana");
             System.out.print("Enemigo: ");
@@ -42,7 +42,7 @@ public class GreetServer {
     	if (response.length()== 3) {
     		if (("R").equals(response.substring(0,1)) || ("A").equals(response.substring(0,1))) {
     			switch(response.substring(1)){
-    			case "00": return true;
+    			case "12": return true;
     			case "01": return true;
     			case "02": return true;
     			case "03": return true;
@@ -57,6 +57,7 @@ public class GreetServer {
     			default: return false;
     			}
     		}
+    		
     		else {
     			return false;
     		}
