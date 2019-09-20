@@ -10,8 +10,6 @@
 #include <math.h>
 #include "Sprites.h"
 
-const float VEL;
-
 
 struct Sprite;
 struct Barrel;

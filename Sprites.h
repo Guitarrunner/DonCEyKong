@@ -13,6 +13,7 @@
 #include "LinkedList.h"
 #include "Sprites.c"
 #include "Const.h"
+#include <time.h>
 
 const float VEL = 1;
 
@@ -143,6 +144,51 @@ void updatePlayer(struct Sprite *player){
         player->movingL = false;
 
     }
+}
+
+void createFruit(struct Node **node, int spriteSize){
+   struct Sprite Fruit;
+   srand(time(NULL));
+   const int lianaX1[12] = {19,43,67,67,107,139,163,187,211,235,211,235};
+   int newx = rand(0,12);
+   int newy = rand(72,175);
+   Fruit->x= lianaX1[newx];
+   Fruit->y= newy;
+
+   push(node,&Fruit,spriteSize);
+    
+}
+
+
+void updateLizard(struct Sprite *lizard){
+   boolean up = false;
+   if (lizard->isroja()){
+	if (up) lizard->y--;
+	else lizar->y++;
+	if (inEnd(lizard)) up = true;
+	if (inTop(lizard)) up =false;
+   }
+   else{
+      lizard->y++;
+   }
+}
+
+bool inEnd(struct Sprite *lizard ){
+   const int lianaY2[12] = {199,191,151,199,175,143,175,159,135,135,175,175};
+   for(i=0; i<12; ++i)
+     {
+        if(lizar->y == lianaY2[i]) return true;
+     }
+    return false;
+}
+
+bool inTop(struct Sprite *lizard ){
+   const int lianaY1[12] = {72,72,120,160,72,72,80,80,0,0,144,144};
+   for(i=0; i<12; ++i)
+     {
+        if(lizar->y == lianaY1[i]) return true;
+     }
+    return false;
 }
 
 bool isColliding(struct Sprite *sprite, struct Sprite target){
