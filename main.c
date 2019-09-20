@@ -54,11 +54,13 @@ void newGame(){
     ALLEGRO_TIMER * timer;
 
     struct Node *platList = NULL;
+    struct Node *lianasList = NULL;
     unsigned spriteSize = sizeof(struct Sprite);
 
     //Creacion de plataformas
 
     genAllPlats(&platList, spriteSize);
+    genAllLianas(&lianasList, spriteSize);
 
 
     queue = al_create_event_queue();
@@ -163,6 +165,7 @@ void newGame(){
             al_clear_to_color(al_map_rgb_f(255,0,0));
             al_draw_scaled_bitmap(background,0,0,width,height,0,0,width*multSize,height*multSize,0);
             drawPlatRects(platList);
+            drawPlatRects(lianasList);
 
 /*              IMPORTANTE PARA LAS ANIMACIONES
 
