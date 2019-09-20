@@ -153,9 +153,22 @@ void newGame(){
         }
 //----------------------- Updates ------------------------------------------------------------------------------
         if(key[KEY_SPACE]){
-            
+         player.y+=10;   
         }
-
+	if(key[KEY_UP]){
+            if (player.collide(liana)){
+		y++;}
+        }
+	if(key[KEY_DOWN]){
+            if (player.collide(liana)){
+		y--;}
+        }
+	if(key[KEY_RIGHT]){
+            player.x++;
+        }
+	if(key[KEY_LEFT]){
+            player.y--;
+        }
 
         if (event.type == ALLEGRO_EVENT_TIMER) {
             
