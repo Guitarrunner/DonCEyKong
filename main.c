@@ -172,6 +172,7 @@ void newGame(){
             player.y--;
         }
 
+
         if (event.type == ALLEGRO_EVENT_TIMER) {
             
             //Drawing sprites, background and enemies
