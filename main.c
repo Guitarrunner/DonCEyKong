@@ -1,3 +1,13 @@
+/*
+
++ COMPILE WITH:  
+
+g++ main.c -o Main -lm -L/usr/local/lib -lallegro 
+-lallegro_main -lallegro_audio -lallegro_acodec -lallegro_primitives -lallegro_image -Wno-pointer-arith
+
+*/
+
+
 #include <stdio.h>
 #include <math.h>
 #include <allegro5/allegro.h>
@@ -306,6 +316,8 @@ void newGame(){
       return;
     }
 	
+
+    
     ALLEGRO_SAMPLE *sample=NULL;
 
     sample = al_load_sample( "Sprites/A Thousand Miles [8 Bit Tribute to Vanessa Carlton] - 8 Bit Universe.wav" );
@@ -509,7 +521,7 @@ void newGame(){
                     break;
                 case ALLEGRO_KEY_ESCAPE:
                     running = false;
-
+                    vidas = 0;
                     break;
                 case ALLEGRO_KEY_SPACE:
                     key[KEY_SPACE] = false;

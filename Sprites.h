@@ -64,11 +64,11 @@ void drawPoints(int points, int screenWidth, int screenHeight, ALLEGRO_BITMAP * 
 
     al_draw_scaled_bitmap(spriteSheet,
                               numImageX[ind1],numImageY[ind1], 7, 7,
-                              screenWidth*multSize - 20, 40,14, 14, 0);
+                              202*multSize, 23*multSize,14, 14, 0);
 
     al_draw_scaled_bitmap(spriteSheet,
                               numImageX[ind2],numImageY[ind2], 7, 7,
-                              screenWidth*multSize - 34, 40,14, 14, 0);
+                              202*multSize-14, 23*multSize,14, 14, 0);
 
 }
 
@@ -86,11 +86,7 @@ void drawLives(int points, int screenWidth, int screenHeight, ALLEGRO_BITMAP * s
 
     al_draw_scaled_bitmap(spriteSheet,
                               numImageX[ind1],numImageY[ind1], 7, 7,
-                              screenWidth*multSize - 100, 40,14, 14, 0);
-
-    al_draw_scaled_bitmap(spriteSheet,
-                              numImageX[ind2],numImageY[ind2], 7, 7,
-                              screenWidth*multSize - 114, 40,14, 14, 0);
+                              224*multSize , 23*multSize,14, 14, 0);
 
 }
 
